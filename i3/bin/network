@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Network info
+interface=$(ip addr | awk '/state UP/ {print $2}' | sed 's/.$//')
+ip=$(ip addr show "$interface" | sed -nE 's,inet\s(([[:digit:]]\.?)+).*,\1,p')
+printf "%s (%s)\n" "${interface}" $ip
