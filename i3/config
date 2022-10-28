@@ -13,6 +13,9 @@ set $tag8 
 set $tag9 
 set $tag0 
 
+set $path ~/.config/i3
+set $scripts ~/.config/i3/bin
+
 # i3 config file (v4)
 #
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
@@ -24,6 +27,7 @@ set $mod Mod4
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
 font pango:DejaVu Sans Mono 8
+
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 # The font above is very space-efficient, that is, it looks good, sharp and
@@ -33,8 +37,8 @@ font pango:DejaVu Sans Mono 8
 #hide_edge_borders both
 gaps inner 10
 gaps outer 0
-
 new_window pixel 2
+
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
@@ -45,31 +49,26 @@ bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+Shift+d exec dmenu_run
+bindsym $mod+Shift+d exec dmenu_run -i -nb '#01141a' -sb '#567ec5' -sf '#09015e' -nf '#567ec5'
+
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
-#bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -b -nb '#011015' -sb '#567ec5' -sf '#000000' -fn 'Terminus-11' -l 10"
-bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
+bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -i -nb '#01141a' -sb '#567ec5' -sf '#09015e' -nf '#567ec5'"
+
 # Workspace toggle $mod + 'q'
 bindsym $mod+q workspace back_and_forth
+
 # Border toggle
 bindsym $mod+x border toggle
 
-# 10
-#alternatively, you can use the cursor keys:
+# focus window
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
 # move focused window
-bindsym $mod+Shift+j move left
-bindsym $mod+Shift+k move down
-bindsym $mod+Shift+l move up
-bindsym $mod+Shift+semicolon move right
-
-# alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
@@ -108,10 +107,13 @@ bindsym $mod+a focus parent
 
 # focus the child container
 bindsym $mod+z focus child
+
 # focus urgent lasted $mod+'='
 bindcode $mod+21 [urgent=latest] focus
+
 # focus follow mouse
 focus_follows_mouse yes
+
 # scratchpad
 bindsym $mod+minus scratchpad show
 bindsym $mod+Shift+minus move scratchpad
@@ -141,31 +143,36 @@ bindsym $mod+Shift+9 move container to workspace number 9 $tag9
 bindsym $mod+Shift+0 move container to workspace $tag0
 
 # rename workspace
-bindsym $mod+t exec ~/.i3/bin/tags num
-bindsym $mod+Shift+t exec ~/.i3/bin/tags
-bindsym $mod+n exec ~/.i3/bin/tags temp
-bindsym $mod+Shift+n exec ~/.i3/bin/tags temp-move
+bindsym $mod+t exec $scripts/tags num
+bindsym $mod+Shift+t exec $scripts/tags
+bindsym $mod+n exec $scripts/tags temp
+bindsym $mod+Shift+n exec $scripts/tags temp-move
+
 # reminder
 bindsym $mod+apostrophe exec i3-input -F "exec sh -c 'sleep %s && notify-send Remember-%ss-ago!'" -P 'Remind after: '
+
 # [move to] new workspace
 bindsym $mod+i exec i3-input -F "workspace \"%s\"" -P 'Workspace: '
 bindsym $mod+Shift+i exec i3-input -F "move container to workspace \"%s\"" -P 'Move to workspace: '
+
 # mark container
 bindsym $mod+m exec i3-input -F 'mark %s' -P 'Mark name: '
 bindsym $mod+Shift+m exec i3-input -F '[con_mark=%s] focus' -P 'Go to mark: '
+
 # copy to register ($mod+., $mod+Shift+.)
-bindcode $mod+60 exec ~/.i3/bin/x-register
-bindcode $mod+Shift+60 exec ~/.i3/bin/x-register copy
+bindcode $mod+60 exec $scripts/x-register
+bindcode $mod+Shift+60 exec $scripts/x-register copy
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
+
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
+
 # exit i3 (logs you out of your X session)
-#bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
-#bindsym $mod+Shift+e exit
 mode "(s)leep (h)ybernate (r)eboot (p)oweroff (e)xit-i3" {
-        bindsym s exec ~/.i3/bin/i3lock.sh && systemctl suspend; mode "default"
-        bindsym h exec ~/.i3/bin/i3lock.sh && systemctl hibernate; mode "default"
+        bindsym s exec $scripts/i3lock.sh && systemctl suspend; mode "default"
+        bindsym h exec $scripts/i3lock.sh && systemctl hibernate; mode "default"
         bindsym p exec systemctl poweroff; mode "default"
         bindsym r exec systemctl reboot; mode "default"
         bindsym e exec --no-startup-id i3-msg exit; mode "default"
@@ -173,7 +180,9 @@ mode "(s)leep (h)ybernate (r)eboot (p)oweroff (e)xit-i3" {
         bindsym Escape mode "default"
 }
 bindsym $mod+Shift+e mode "(s)leep (h)ybernate (r)eboot (p)oweroff (e)xit-i3"
-bindsym $mod+l exec ~/.i3/bin/i3lock.sh
+
+# lock screen
+bindsym $mod+l exec $scripts/i3lock.sh
 
 # mouse mode
 mode "mouse" {
@@ -252,33 +261,30 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # Start i3bar to display a workspace bar
-bindsym $mod+b bar mode toggle
 bar {
         font pango: SauceCodePro Nerd Font 9
         i3bar_command /usr/bin/i3bar -t
-        status_command i3blocks -c ~/.i3/i3blocks.conf
-        # status_command i3status -c ~/.i3/i3status.conf
-        # status_command ~/.i3/bin/conky-i3bar
+        status_command i3blocks -c $path/i3blocks.conf
         strip_workspace_numbers yes
         position top
         colors {
-                #background #282A36
-                background #00000000
+                background #222b33
                 statusline #F8F8F2
-                separator  #00FF00
-                focused_workspace  #44475A #44475A #F8F8F2
-                active_workspace   #282A36 #44475A #F8F8F2
+                separator  #2b6fa6
+                focused_workspace  #575e8c #44475A #F8F8F2
+                active_workspace   #7280d4 #44475A #F8F8F2
                 inactive_workspace #282A36 #282A36 #BFBFBF
-                urgent_workspace   #FF5555 #FF5555 #F8F8F2
-                binding_mode       #FF5555 #FF5555 #F8F8F2
+                urgent_workspace   #fa7070 #fa7070 #F8F8F2
+                binding_mode       #fa7070 #fa7070 #F8F8F2
         }
-#       status_command i3blocks
 }
+bindsym $mod+b bar mode toggle
+
 # define color
-set $bg     #2c2c2e
+set $bg     #2b6fa6
 set $fg     #9f9f9f
 set $hi     #efef8f
-set $ac     #11aa55
+set $ac     #0289f7
 set $tx     #f1f1f1
 set $ia     #8f8f8f
 set $be     #8faf9f
@@ -297,30 +303,25 @@ client.urgent               $yw     $yw         $tx     $id
 # start application
 exec --no-startup-id nm-applet
 exec --no-startup-id feh --bg-fill ~/Pictures/1.jpg --bg-fill ~/Pictures/2.png
-# exec --no-startup-id conky -d -c ~/.i3/conky-right
-# exec --no-startup-id conky -d -c ~/.i3/conky-left
-# exec --no-startup-id conky -d -c ~/.i3/conky-bottom
-exec --no-startup-id ~/.i3/bin/bar
-exec --no-startup-id ~/.i3/bin/xinput-fix
+exec --no-startup-id $scripts/bar
+exec --no-startup-id $scripts/xinput-fix
 exec --no-startup-id dunst
 exec --no-startup-id ibus-daemon --xim -d -r
 exec --no-startup-id dconf write /desktop/ibus/general/engines-order "['xkb:us::eng', 'Unikey']"
-exec --no-startup-id xautolock -time 5 -locker '~/.i3/bin/i3lock.sh'
-exec --no-startup-id ~/.i3/bin/redshift
+exec --no-startup-id xautolock -time 5 -locker $scripts/i3lock.sh
+exec --no-startup-id $scripts/redshift
 exec --no-startup-id thunderbird
 exec --no-startup-id wire-desktop
+exec --no-startup-id picom -CGb
 
-bindsym $mod+space exec ~/.i3/i3-keyboard-layout.conf cycle us am
+bindsym $mod+space exec $path/i3-keyboard-layout.conf cycle us am
 
 # clipboard manager
-exec --no-startup-id ~/.i3/bin/clipmenud
-bindsym $mod+Insert exec CM_OUTPUT_CLIP=1 ~/.i3/bin/clipmenu
+exec --no-startup-id $scripts/clipmenud
+bindsym $mod+Insert exec CM_OUTPUT_CLIP=1 $scripts/clipmenu
 
 # lock screen
-bindsym --release XF86ScreenSaver exec ~/.i3/bin/i3lock.sh
-bindsym --release $mod+Delete exec ~/.i3/bin/i3lock.sh
-bindsym --release $mod+Mod1+l exec ~/.i3/bin/i3lock.sh
-bindsym --release control+Mod1+Delete exec ~/.i3/bin/i3lock.sh
+bindsym --release XF86ScreenSaver exec $scripts/i3lock.sh
 
 # Pulse Audio controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q sset Master 5%+
@@ -332,16 +333,15 @@ bindsym XF86MonBrightnessUp exec xbacklight -inc 5 # increase screen brightness
 bindsym XF86MonBrightnessDown exec xbacklight -dec 5 # decrease screen brightness
 
 # Touchpad controls
-bindsym --release XF86Sleep exec ~/.i3/bin/i3lock.sh && systemctl suspend
+bindsym --release XF86Sleep exec $scripts/i3lock.sh && systemctl suspend
 
 # Screenshot
-bindsym Print exec scrot -e 'mv $f /tmp/'
-bindsym $mod+Print exec gnome-screenshot -i -a
+bindsym Print exec spectacle
 
 # Toggle fastly terminal
-bindsym $mod+Escape exec ~/.i3/bin/fn esc
-bindcode $mod+49 exec ~/.i3/bin/fn 0
-bindsym $mod+F12 exec ~/.i3/bin/fn 12
+bindsym $mod+Escape exec $scripts/fn esc
+bindcode $mod+49 exec $scripts/fn 0
+bindsym $mod+F12 exec $scripts/fn 12
 
 # Media player controls
 bindsym XF86AudioPlay exec playerctl play-pause
@@ -356,23 +356,17 @@ assign [class="keepassxc"] $tag0
 
 ## shortcut
 # emacs
-bindsym $mod+Mod1+i exec emacs
-# keepassx
-bindsym $mod+Mod1+k exec keepassxc
+bindsym $mod+Mod1+v exec vim
+
 # email
 bindsym $mod+Mod1+e exec thunderbird
+
 # browser
-bindsym $mod+Mod1+n exec nyxt
-bindsym $mod+Mod1+b exec firefox -P default
-bindsym $mod+Mod1+Shift+b exec firefox -P default --private-window
-bindsym $mod+Mod1+g exec chromium --temp-profile
-bindsym $mod+Mod1+Shift+g exec chromium --temp-profile --incognito
+bindsym $mod+Mod1+b exec microsoft-edge
+bindsym $mod+Mod1+Shift+b exec microsoft-edge --inprivate
+
 # gimp
 bindsym $mod+Mod1+p exec gimp
-# wicd
-bindsym $mod+Mod1+w exec wicd-client -n
-# explore
-bindsym $mod+Mod1+r exec /usr/bin/rxvt -e ranger
 
 bindcode $mod+90 [title="YouTube"] scratchpad show
 for_window [title="YouTube"] sticky enable

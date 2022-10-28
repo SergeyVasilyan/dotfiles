@@ -5,5 +5,3 @@ if [ $? -eq 0 ]; then
 else
 	amixer get Master -M | grep -oP '\d*%' | tail -n1 | sed 's/%//g'
 fi
-	
-
