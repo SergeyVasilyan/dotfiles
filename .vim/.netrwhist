@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =9
+let g:netrw_dirhist_9='/etc/anydesk'
+let g:netrw_dirhist_8='/etc/gdm3'
+let g:netrw_dirhist_7='/etc'
+let g:netrw_dirhist_6='/etc/lightdm'
+let g:netrw_dirhist_5='/etc/lightdm/lightdm.conf.d'
+let g:netrw_dirhist_4='/home/sergey_v/workspace/security_systems/src/cloud/mongo'
+let g:netrw_dirhist_3='/home/sergey_v/workspace/security_systems/src/cloud/mongo/old_logs'
+let g:netrw_dirhist_2='/home/sergey_v/workspace/security_systems/src/cloud'
+let g:netrw_dirhist_1='/home/sergey_v/workspace/security_systems/src/cloud/mongo'
+let g:netrw_dirhist_0='/home/sergey_v/workspace/security_systems/src/cloud'
