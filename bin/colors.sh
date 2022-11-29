@@ -1,6 +1,6 @@
 #!/bin/bash
 # Reset
-Color_Off='\033[0m'       # Text Reset
+Clear='\033[0m'       # Text Reset
 
 # Regular Colors
 Black='\033[0;30m'        # Black

@@ -1,0 +1,18 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use utf8;
+
+my $label = $ENV{LABEL} // "";
+my $interface = `ip route get 8.8.8.8 | grep -oP 'dev \\K[^ ]+'`;
+my $ip = `ip route get 8.8.8.8 | grep -oP 'src \\K[^ ]+'`;
+
+chomp $interface;
+chomp $ip;
+
+print "${label}";
+print "$interface $ip\n";
+print "${label}";
+print "$interface $ip\n";
+
+exit 0;
