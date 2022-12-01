@@ -26,7 +26,7 @@ set $mod Mod4
 # is used in the bar {} block below.
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-font pango:DejaVu Sans Mono 8
+font pango: JetBrains Mono Regular 8.5
 
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
@@ -37,7 +37,7 @@ font pango:DejaVu Sans Mono 8
 #hide_edge_borders both
 gaps inner 10
 gaps outer 0
-new_window pixel 2
+new_window pixel 3
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -141,12 +141,6 @@ bindsym $mod+Shift+7 move container to workspace number 7 $tag7
 bindsym $mod+Shift+8 move container to workspace number 8 $tag8
 bindsym $mod+Shift+9 move container to workspace number 9 $tag9
 bindsym $mod+Shift+0 move container to workspace $tag0
-
-# rename workspace
-bindsym $mod+t exec $scripts/tags num
-bindsym $mod+Shift+t exec $scripts/tags
-bindsym $mod+n exec $scripts/tags temp
-bindsym $mod+Shift+n exec $scripts/tags temp-move
 
 # reminder
 bindsym $mod+apostrophe exec i3-input -F "exec sh -c 'sleep %s && notify-send Remember-%ss-ago!'" -P 'Remind after: '
