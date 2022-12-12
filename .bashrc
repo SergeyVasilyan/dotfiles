@@ -59,50 +59,114 @@ fi
 # The following block is surrounded by two delimiters.
 # These delimiters must not be modified. Thanks.
 # START UBUNTU CONFIG VARIABLES
-PROMPT_ALTERNATIVE=twoline
-NEWLINE_BEFORE_PROMPT=yes
 # STOP UBUNTU CONFIG VARIABLES
+
+readonly GIT_NEED_PULL_SYMBOL='⇣'
+readonly GIT_NEED_PUSH_SYMBOL='⇡'
+
+readonly BG_BLACK="$(tput setab 0)"
+readonly BG_B_RED="$(tput setab 1)"
+readonly BG_RED="$(tput setab 88)"
+readonly BG_GREEN="$(tput setab 40)"
+readonly BG_YELLOW="$(tput setab 3)"
+readonly BG_BLUE="$(tput setab 32)"
+readonly BG_MAGENTA="$(tput setab 55)"
+readonly BG_CYAN="$(tput setab 6)"
+readonly BG_WHITE="$(tput setab 7)"
+readonly BG_GREY="$(tput setab 8)"
+
+readonly FG_BLACK="$(tput setaf 0)"
+readonly FG_B_RED="$(tput setaf 1)"
+readonly FG_RED="$(tput setaf 88)"
+readonly FG_GREEN="$(tput setaf 40)"
+readonly FG_YELLOW="$(tput setaf 3)"
+readonly FG_BLUE="$(tput setaf 32)"
+readonly FG_MAGENTA="$(tput setaf 55)"
+readonly FG_CYAN="$(tput setaf 6)"
+readonly FG_WHITE="$(tput setaf 7)"
+readonly FG_GREY="$(tput setaf 8)"
+
+readonly RESET="$(tput sgr0)"
+readonly BOLD="$(tput bold)"
+readonly DIM="$(tput dim)"
+
+__git_info() {
+    # no .git directory
+    [ -d .git ] || return
+    local aheadN
+    local behindN
+    local branch
+    local marks
+    local stats
+    # get current branch name or short SHA1 hash for detached head
+    branch="$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --always 2>/dev/null)"
+    [ -n "$branch" ] || return  # git branch not found
+    # how many commits local branch is ahead/behind of remote?
+    stats="$(git status --porcelain --branch | grep '^##' | grep -o '\[.\+\]$')"
+    aheadN="$(echo "$stats" | grep -o 'ahead \d\+' | grep -o '\d\+')"
+    behindN="$(echo "$stats" | grep -o 'behind \d\+' | grep -o '\d\+')"
+    [ -n "$aheadN" ] && marks+=" $GIT_NEED_PUSH_SYMBOL$aheadN"
+    [ -n "$behindN" ] && marks+=" $GIT_NEED_PULL_SYMBOL$behindN"
+    # print the git branch segment without a trailing newline
+    # branch is modified?
+    if [ -n "$(git status --porcelain)" ]; then
+        printf "%s" "${BG_RED}${FG_WHITE}${BOLD} ${branch}${marks} ${RESET}${FG_RED}"
+    else
+        printf "%s" "${BG_BLUE}${FG_WHITE}${BOLD} ${branch}${marks} ${RESET}${FG_BLUE}"
+    fi
+}
 
 parse_git_branch() {
     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
 }
 
-red="\[\e[1;31m\]"
-green="\[\e[1;32m\]"
-yellow="\[\e[1;33m\]"
-blue="\[\e[1;34m\]"
-magenta="\[\e[1;35m\]"
-cyan="\[\e[1;36m\]"
-header="\[\e[1;95m\]"
-reset="\[\e[0m\]"
-prompt_color="\[\e[1;32m\]"
-info_color="\[\e[1;34m\]"
-prompt_symbol=👽
+PROMPT_ALTERNATIVE=arch
+NEWLINE_BEFORE_PROMPT=no
+
+PROMPT_SYMBOL=👽
+PROMPT_COLOR=${FG_GREEN}
+PROMPT_BG=${BG_GREY}
+PROMPT_FG=${FG_GREY}
+
+set_ps() {
+    local mode
+    mode=$1
+    case "$1" in
+        arch)
+            PS1="${BG_RED}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV)${RESET}${FG_RED})}"
+            PS1+="${BG_MAGENTA}${FG_WHITE}${BOLD} \D{%Y-%m-%d %H:%M:%S} ${RESET}${FG_MAGENTA}"
+            PS1+="${PROMPT_BG}${FG_WHITE}${BOLD} \u ${PROMPT_SYMBOL} \h ${RESET}${PROMPT_FG}"
+            PS1+="\$([[ \$? == 0 ]] && echo \"${BG_GREEN}${FG_BLACK}${BOLD} \342\234\223 ${RESET}${FG_GREEN}\""
+            PS1+=" || echo \"${BG_RED}${FG_WHITE}${BOLD} \342\234\227 ${RESET}${FG_RED}\")"
+            PS1+="${BG_YELLOW}${FG_BLACK}${BOLD} \w "
+            PS1+="(${FG_RED}\$(ls -1 | wc -l | sed 's: ::g') ${FG_BLACK}files,"
+            PS1+="${FG_RED} \$(ls -sh | head -n1 | sed 's/total //')${FG_BLACK}) ${RESET}${FG_YELLOW}\n"
+            PS1+="${FG_CYAN}\$(__git_info)${RESET} ";;
+        kali)
+            PS1="${PROMPT_COLOR}┌─${VIRTUAL_ENV:+(${reset}$(basename $VIRTUAL_ENV)${PROMPT_COLOR})}─"
+            PS1+="[${FG_MAGENTA}\D{%Y-%m-%d %H:%M:%S}${PROMPT_COLOR}]─"
+            PS1+="{${PROMPT_FG}\u ${PROMPT_SYMBOL} \h${PROMPT_COLOR}}─"
+            PS1+="(${FG_YELLOW}\$? \$([[ \$? == 0 ]] && echo \"${FG_GREEN}\342\234\223\" "
+            PS1+="|| echo \"${FG_RED}\342\234\227\")${PROMPT_COLOR})─"
+            PS1+="(${FG_B_RED}\w "
+            PS1+="${FG_YELLOW}\$(ls -1 | wc -l | sed 's: ::g') ${FG_GREEN}files${PROMPT_COLOR}, "
+            PS1+="${FG_YELLOW}\$(ls -sh | head -n1 | sed 's/total //')${PROMPT_COLOR})\n"
+            PS1+="└─${FG_CYAN}\$(parse_git_branch)${PROMPT_COLOR}─"
+            PS1+="${PROMPT_FG}\$${RESET} ";;
+        ubuntu)
+            PS1="${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}${debian_chroot:+($debian_chroot)}${PROMPT_FG}\u@\h${RESET}:${PROMPT_COLOR}\[\033[01m\]\w${RESET}\$ ";;
+    esac
+}
 
 if [ "$color_prompt" = yes ]; then
     VIRTUAL_ENV_DISABLE_PROMPT=1
     if [ "$EUID" -eq 0 ]; then # Change prompt colors for root user
-        prompt_color="\[\e[1;94m\]"
-        info_color="\[\e[1;31m\]"
-        prompt_symbol=☠️
+        PROMPT_SYMBOL=☠️
+        PROMPT_COLOR=${FG_BLUE}
+        PROMPT_BG=${BG_B_RED}
+        PROMPT_FG=${FG_B_RED}
     fi
-    case "$PROMPT_ALTERNATIVE" in
-        twoline)
-            PS1="${prompt_color}┌─${VIRTUAL_ENV:+(${reset}$(basename $VIRTUAL_ENV)${prompt_color})}─"
-            PS1+="[${header}\D{%Y-%m-%d %H:%M:%S}${prompt_color}]─"
-            PS1+="{${info_color}\u${prompt_symbol}\h${prompt_color}}─"
-            PS1+="(${yellow}\$? \$([[ \$? == 0 ]] && echo \"${green}\342\234\223\" || echo \"${red}\342\234\227\")${prompt_color})─"
-            PS1+="(${red}\w "
-            PS1+="${yellow}\$(ls -1 | wc -l | sed 's: ::g') ${green}files${prompt_color}, ${yellow}\$(ls -sh | head -n1 | sed 's/total //')${prompt_color})\n"
-            PS1+="└─${cyan}\$(parse_git_branch)${prompt_color}─"
-            PS1+="${info_color}\$${reset} ";;
-        oneline)
-            PS1="${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}${debian_chroot:+($debian_chroot)}${info_color}\u@\h${reset}:${prompt_color}\w${reset}\$ ";;
-        backtrack)
-            PS1="${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}${debian_chroot:+($debian_chroot)}${red}\u@\h${reset}:${blue}\w${reset}\$ ";;
-    esac
-#   PS1="${header}\D{%Y-%m-%d %H:%M:%S}${reset} ${debian_chroot:+($debian_chroot)}${green}\u@\h${cyan}:${blue}\w${cyan}\$${reset} "
-#   PS1='${debian_chroot:+($debian_chroot)}\${green}\u@\h${reset}:${blue}\w${reset}\$ '
+    set_ps ${PROMPT_ALTERNATIVE}
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
