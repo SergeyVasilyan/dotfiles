@@ -1,0 +1,96 @@
+{
+    "modules-left": ["sway/workspaces", "sway/mode", "idle_inhibitor", "custom/spotify"],
+    "modules-center": ["sway/window"],
+    "modules-right": ["pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "battery", "clock", "custom/language", "tray"],
+    "sway/mode": {
+        "format": "<span style=\"italic\">{}</span>"
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+    "custom/language": {
+        "interval": 1,
+        "exec": "$HOME/.config/waybar/layout.sh 2> /dev/null"
+      },
+    "tray": {
+        "spacing": 10
+    },
+    "clock": {
+        "interval": 1,
+        "format": "{:%D %H:%M:%S} 【┘】"
+    },
+    "cpu": {
+        "interval": 1,
+        "format": "U:{usage}% L:{load}% ",
+        "tooltip": false
+    },
+    "memory": {
+        "interval": 1,
+        "format": "{used:0.1f}/{total:0.1f} GiB "
+    },
+    "temperature": {
+        "interval": 1,
+        "thermal-zone": 2,
+        "critical-threshold": 80,
+        "format": "{temperatureC}°C {icon}",
+        "format-icons": ["", "", ""]
+    },
+    "backlight": {
+        "interval": 1,
+        "device": "acpi_video1",
+        "format": "{percent}% {icon}",
+        "format-icons": ["", ""]
+    },
+    "battery": {
+        "interval": 1,
+        "states": {
+            "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}% {icon}",
+        "format-charging": "{capacity}% ",
+        "format-plugged": "{capacity}% ",
+        "format-alt": "{time} {icon}",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "network": {
+        "interval": 1,
+        "format-wifi": "{essid} ({signalStrength}%) ",
+        "format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected ⚠",
+        "format-alt": "{ifname}: {ipaddr} "
+    },
+    "pulseaudio": {
+        "scroll-step": 1, // %, can be a float
+        "format": "{volume}% {icon} {format_source}",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+    "custom/spotify": {
+        "exec": "/usr/bin/python3 $HOME/.config/waybar/mediaplayer.py --player spotify",
+        "format": "{}  ",
+        "return-type": "json",
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous"
+    }
+}

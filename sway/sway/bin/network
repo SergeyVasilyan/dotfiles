@@ -1,0 +1,23 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use utf8;
+
+my $label = $ENV{LABEL} // "";
+my $button = $ENV{BLOCK_BUTTON} // 0;
+my $interface = `ip route get 8.8.8.8 | grep -oP 'dev \\K[^ ]+'`;
+my $ip = `ip route get 8.8.8.8 | grep -oP 'src \\K[^ ]+'`;
+
+chomp $interface;
+chomp $ip;
+
+print "${label}";
+print "$interface $ip\n";
+print "${label}";
+print "$interface $ip\n";
+
+if ($button == 1){
+    system("gnome-terminal -- /bin/bash -c 'nmtui'");
+}
+
+exit 0;

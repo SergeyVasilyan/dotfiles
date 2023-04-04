@@ -1,0 +1,30 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use utf8;
+
+my $label = $ENV{LABEL} // "";
+my $button = $ENV{BLOCK_BUTTON} // 0;
+my $regular_updates = `/usr/lib/update-notifier/apt-check 2>&1 | cut -d ';' -f 1`;
+my $security_updates = `/usr/lib/update-notifier/apt-check 2>&1 | cut -d ';' -f 2`;
+
+chomp $security_updates;
+chomp $regular_updates;
+
+print "${label}";
+print "S: $security_updates R: $regular_updates\n";
+print "${label}";
+print "S: $security_updates R: $regular_updates\n";
+
+if ($security_updates != 0) {
+    print "#FF0000\n";
+} elsif ($regular_updates != 0) {
+    print "#FFFF00\n";
+}
+if ($button == 1) {
+    system("gnome-terminal -- /bin/bash -c 'sudo apt update'");
+} elsif ($button == 2) {
+    system("gnome-terminal -- /bin/bash -c 'sudo apt upgrade -y'");
+}
+
+exit 0;

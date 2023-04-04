@@ -1,0 +1,6 @@
+#!/bin/bash
+
+case $BLOCK_BUTTON in
+  1) TZ=UTC+8 date -R ;;
+esac
+date -R

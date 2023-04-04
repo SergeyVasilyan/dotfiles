@@ -186,3 +186,41 @@ let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 "" see :h vundle for more details or wiki for FAQ
 "" Put your non-Plugin stuff after this line
 "let g:ycm_use_clangd = 0
+
+set laststatus=2
+
+hi NormalColor  guifg=Black   guibg=Green           ctermbg=46  ctermfg=0
+hi InsertColor  guifg=Black   guibg=Cyan            ctermbg=51  ctermfg=0
+hi ReplaceColor guifg=Black   guibg=maroon1         ctermbg=165 ctermfg=0
+hi VisualColor  guifg=Black   guibg=Orange          ctermbg=202 ctermfg=0
+hi FilePath     guifg=Cyan3   guibg=DarkBlue        ctermbg=18  ctermfg=43
+hi FileType     guifg=Cyan3   guibg=Blue3           ctermbg=19  ctermfg=43
+hi Encoding1    guifg=Cyan3   guibg=Blue2           ctermbg=20  ctermfg=43
+hi Encoding2    guifg=Cyan3   guibg=Blue1           ctermbg=21  ctermfg=43
+hi FileFormat   guifg=Cyan3   guibg=DodgerBlue2     ctermbg=27  ctermfg=43
+hi Highlight    guifg=Cyan3   guibg=DodgerBlue3     ctermbg=26  ctermfg=43
+hi RowNumber    guifg=Cyan3   guibg=DeepSkyBlue4    ctermbg=25  ctermfg=43
+hi ColNumber    guifg=Cyan3   guibg=DeepSkyBlue4    ctermbg=24  ctermfg=43
+hi Modified     guifg=Cyan3   guibg=DeepSkyBlue4    ctermbg=23  ctermfg=43
+
+function! HighlightSearch()
+  if &hls
+    return 'H'
+  else
+    return ''
+  endif
+endfunction
+
+set statusline=
+set statusline+=%#NormalColor#%{(mode()=='n')?'\ \ NORMAL\ ':''}
+set statusline+=%#InsertColor#%{(mode()=='i')?'\ \ INSERT\ ':''}
+set statusline+=%#ReplaceColor#%{(mode()=='R')?'\ \ REPLACE\ ':''}
+set statusline+=%#VisualColor#%{(mode()=='v')?'\ \ VISUAL\ ':''}
+set statusline+=%#FilePath#%<\ %f\                                            "File+path
+set statusline+=%#FileType#%<\ %y\                                            "FileType
+set statusline+=%#Encoding1#%<\ %{''.(&fenc!=''?&fenc:&enc).''}\              "Encoding
+set statusline+=%#FileFormat#%<\ %{&ff}\                                      "FileFormat (dos/unix..)
+set statusline+=%#Highlight#%<\ %{&spelllang}\ \%{HighlightSearch()}\         "Spellanguage & Highlight on?
+set statusline+=%#RowNumber#%<\ %=\ Row:\ %l/%L\ (%03p%%)\                    "Rownumber/total (%)
+set statusline+=%#ColNumber#%<\ Col:\ %03c\                                   "Colnr
+set statusline+=%#Modified#%<\ %m%r%w\ %P\ \                                  "Modified? Readonly? Top/bot.
