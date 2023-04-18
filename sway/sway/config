@@ -34,9 +34,6 @@ set $sl     #999999
 set $path ~/.config/sway
 set $scripts ~/.config/sway/bin
 
-# i3 config file (v4)
-#
-# Please see http://i3wm.org/docs/userguide.html for a complete reference!
 # Super key
 set $mod Mod4
 
@@ -44,18 +41,13 @@ set $mod Mod4
 # is used in the bar {} block below.
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-font pango: JetBrains Mono Regular 8.5
+font pango: JetBrains Mono Regular 10
 
-# Before i3 v4.8, we used to recommend this one as the default:
-# font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
-# The font above is very space-efficient, that is, it looks good, sharp and
-# clear in small sizes. However, its unicode glyph coverage is limited, the old
-# X core fonts rendering does not support right-to-left and this being a bitmap
-# font, it doesn’t scale on retina/hidpi displays.
 #hide_edge_borders both
 gaps inner 10
 gaps outer 0
 default_border pixel 1
+smart_borders on
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -67,8 +59,6 @@ bindsym $mod+Return exec konsole
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-#bindsym $mod+Shift+d exec dmenu_run -i -nb '$bgr' -sb '$sep' -sf '#ff0000' -nf '#ff0000'
-#bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu="dmenu -i -nb '$bgr' -sb '$sep' -sf '$bgr' -nf '$sep'"
 bindsym $mod+Shift+d exec "rofi -modi drun,run,combi -show combi -show-icons"
 bindsym $mod+d exec --no-startup-id "rofi -modi drun,run -show drun -show-icons"
 
@@ -130,10 +120,6 @@ bindcode $mod+21 [urgent=latest] focus
 # focus follow mouse
 focus_follows_mouse yes
 
-# scratchpad
-bindsym $mod+minus scratchpad show
-bindsym $mod+Shift+minus move scratchpad
-
 # switch to workspace
 bindsym $mod+1 workspace number 1 $tag1
 bindsym $mod+2 workspace number 2 $tag2
@@ -158,35 +144,21 @@ bindsym $mod+Shift+8 move container to workspace number 8 $tag8
 bindsym $mod+Shift+9 move container to workspace number 9 $tag9
 bindsym $mod+Shift+0 move container to workspace $tag0
 
-# [move to] new workspace
-bindsym $mod+i exec i3-input -F "workspace \"%s\"" -P 'Workspace: '
-bindsym $mod+Shift+i exec i3-input -F "move container to workspace \"%s\"" -P 'Move to workspace: '
-
-# mark container
-bindsym $mod+m exec i3-input -F 'mark %s' -P 'Mark name: '
-bindsym $mod+Shift+m exec i3-input -F '[con_mark=%s] focus' -P 'Go to mark: '
-
-# copy to register ($mod+., $mod+Shift+.)
-bindcode $mod+60 exec $scripts/x-register
-bindcode $mod+Shift+60 exec $scripts/x-register copy
-
 # reload the configuration file
 bindsym $mod+Shift+c reload
 
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+r restart
-
-# exit i3 (logs you out of your X session)
-mode "(s)leep (h)ybernate (r)eboot (p)oweroff (e)xit-sway" {
+# exit
+mode "(s)leep (h)ibernate (r)eboot (p)oweroff (e)xit-sway" {
         bindsym s exec $scripts/lock.sh && systemctl suspend; mode "default"
         bindsym h exec $scripts/lock.sh && systemctl hibernate; mode "default"
         bindsym p exec systemctl poweroff; mode "default"
         bindsym r exec systemctl reboot; mode "default"
-        bindsym e exec --no-startup-id i3-msg exit; mode "default"
+        bindsym e exec swaymsg exit; mode "default"
         bindsym Return mode "default"
         bindsym Escape mode "default"
 }
-bindsym $mod+Shift+e mode "(s)leep (h)ybernate (r)eboot (p)oweroff (e)xit-i3"
+#bindsym $mod+Shift+e mode "(s)leep (h)ibernate (r)eboot (p)oweroff (e)xit"
+bindsym $mod+Shift+e exec swaymsg exit
 
 # lock screen
 bindsym $mod+l exec $scripts/lock.sh
@@ -270,7 +242,7 @@ bindsym $mod+r mode "resize"
 # Start i3blocks to display a workspace bar
 bar {
         tray_padding 1
-        font pango: JetBrains Mono Regular 8.5
+        font pango: JetBrains Mono Regular 12
         swaybar_command waybar
         strip_workspace_numbers no
         position top
@@ -278,7 +250,6 @@ bar {
                 background $bgr
                 statusline $sl
                 separator  $sep
-
                                    #border #bkg    #fgr
                 focused_workspace  $sep    $bgr    $sep
                 active_workspace   $sl     $bgr    $sl
@@ -296,14 +267,11 @@ client.focused_inactive     $bg     $bg         $ac     $id
 client.urgent               $yw     $yw         $tx     $id
 
 # start application
+exec_always --no-startup-id $scripts/autotiling
 exec --no-startup-id nm-applet
-exec --no-startup-id $scripts/bar
 exec --no-startup-id $scripts/xinput-fix
 exec --no-startup-id mako
-exec --no-startup-id ibus-daemon --xim -d -r
-exec --no-startup-id dconf write /desktop/ibus/general/engines-order "['xkb:us::eng', 'Unikey']"
 exec --no-startup-id thunderbird
-exec --no-startup-id picom -CGb
 
 exec swayidle -w timeout 200 $scripts/lock.sh before-sleep $scripts/lock.sh
 
@@ -333,6 +301,10 @@ bindsym XF86MonBrightnessDown exec xbacklight -dec 5 # decrease screen brightnes
 bindsym --release XF86Sleep exec $scripts/lock.sh && systemctl suspend
 
 # Screenshot
+for_window [class="MongoDB Compass"] floating enable
+for_window [app_id="gnome-calendar"] floating enable
+for_window [app_id="org.kde.kcalc"] floating enable
+for_window [app_id="gnome-calculator"] floating enable
 for_window [app_id="zenity"] floating enable
 bindsym Print exec wayland-screenshot
 
@@ -341,13 +313,9 @@ bindsym XF86AudioPlay exec playerctl play-pause
 bindsym XF86AudioPause exec playerctl pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
-
 bindsym XF86Launch1 exec xset dpms force off
 
 ## shortcut
-# emacs
-bindsym $mod+Mod1+v exec vim
-
 # email
 bindsym $mod+Mod1+e exec thunderbird
 

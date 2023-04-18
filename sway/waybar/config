@@ -1,10 +1,8 @@
 {
+    "layer": "top",
     "modules-left": ["sway/workspaces", "sway/mode", "idle_inhibitor", "custom/spotify"],
     "modules-center": ["sway/window"],
     "modules-right": ["pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "battery", "clock", "custom/language", "tray"],
-    "sway/mode": {
-        "format": "<span style=\"italic\">{}</span>"
-    },
     "idle_inhibitor": {
         "format": "{icon}",
         "format-icons": {

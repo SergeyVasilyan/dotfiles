@@ -100,7 +100,7 @@ def main():
     logger.setLevel(max((3 - arguments.verbose) * 10, 0))
 
     # Log the sent command line arguments
-    logger.debug('Arguments received {}'.format(vars(arguments)))
+    logger.debug(f'Arguments received {vars(arguments)}')
 
     manager = Playerctl.PlayerManager()
     loop = GLib.MainLoop()
